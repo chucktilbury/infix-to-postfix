@@ -20,7 +20,6 @@ typedef struct __stack_elem {
 
 typedef struct {
     size_t item_size;
-    __stack_elem* base;
     __stack_elem* top;
 } __stack;
 
@@ -41,8 +40,8 @@ int push_stack(stack stk, void* in_buf) {
     }
 
     memcpy(nelem->data, in_buf, s->item_size);
-    if(s->base == NULL) {
-        s->base = s->top = nelem;
+    if(s->top == NULL) {
+        s->top = nelem;
         // next and prev are NULL
     }
     else {
@@ -93,8 +92,8 @@ int peek_stack(stack stk, void* out_buf) {
 int stack_is_empty(stack stk) {
 
     __stack* s = (__stack*)stk;
-
-    return (s->top == NULL);
+    int v = (s->top == NULL);
+    return v;
 }
 
 stack create_stack(size_t size) {
@@ -113,20 +112,24 @@ stack create_stack(size_t size) {
 
 int destroy_stack(stack stk) {
 
-    __stack* s = (__stack*)stk;
-    __stack_elem* crnt;
-    __stack_elem* next;
+    // __stack* s = (__stack*)stk;
+    // __stack_elem* crnt;
+    // __stack_elem* next;
 
-    if(stk != NULL) {
-        for(crnt = s->base; crnt != NULL; crnt=next) {
-            next = crnt->next;
-            if(crnt->data != NULL) {
-                free(crnt->data);
-            }
-        }
-        free(stk);
-        return 0;
+    while(!stack_is_empty(stk)) {
+        pop_stack(stk, NULL);
     }
+    free(stk);
+    // if(stk != NULL) {
+    //     for(crnt = s->base; crnt != NULL; crnt=next) {
+    //         next = crnt->next;
+    //         if(crnt->data != NULL) {
+    //             free(crnt->data);
+    //         }
+    //     }
+    //     free(stk);
+    //     return 0;
+    // }
     return 1;
 }
 

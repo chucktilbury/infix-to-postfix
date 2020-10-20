@@ -1,6 +1,7 @@
 TARGET	=	conv
 OBJS	=	main.o \
 			convert.o \
+			solve.o \
 			scanner.o \
 			queue.o \
 			stack.o

@@ -10,19 +10,21 @@
 #include "stack.h"
 #include "queue.h"
 
-typedef struct {
-    int type;
-    int data;
-} expr_item;
+typedef struct __op_prec {
+    int op;
+    int prec;
+} op_prec;
+
 
 static op_prec precs[] = {
-    {OPAREN, 0},
-    {CPAREN, 0},
-    {ADD, 1},
-    {SUB, 1},
-    {MUL, 2},
-    {DIV, 2},
-    {UNARY, 3},
+    {OPAREN, 1},
+    {CPAREN, 1},
+    {ADD, 2},
+    {SUB, 2},
+    {MUL, 3},
+    {DIV, 3},
+    {UNARYMINUS, 4},
+    {UNARYPLUS, 4},
     {-1, -1}
 };
 
@@ -102,15 +104,13 @@ static void transfer(queue q, stack s) {
  */
 static void handle_operator(queue q, stack s, expr_item* item) {
 
-    if(item->data == UNARY) {
-        push_stack(s, item);
+    // account for open parens.
+    while(!stack_is_empty(s) && comp_prec(s, item)) {
+        if(comp_token(s, OPAREN))
+            break;
+        transfer(q, s);
     }
-    else {
-        while(!stack_is_empty(s) && comp_prec(s, item)) {
-            transfer(q, s);
-        }
-        push_stack(s, item);
-    }
+    push_stack(s, item);
 }
 
 /*
@@ -145,16 +145,23 @@ queue convert(char* nstr) {
     for(tok = token(nstr, tstr, sizeof(tstr)); tok > 0; tok = token(NULL, tstr, sizeof(tstr))) {
         switch(tok) {
             case ADD:
+                item.type = (ptok == NONE)? UNARYPLUS: ADD;
+                item.data = NONE;
+                ptok = NONE;
+                handle_operator(out_queue, op_stack, &item);
+                break;
+
             case SUB:
-                item.type = tok;
-                if(ptok == NONE) {
-                    item.data = UNARY;
-                }
-                else {
-                    item.data = NONE;
-                    ptok = NONE;
-                }
-                //write_queue(out_queue, &item);
+                item.type = (ptok == NONE)? UNARYMINUS: SUB;
+                item.data = NONE;
+                ptok = NONE;
+                // if(ptok == NONE) {
+                //     item.data = UNARYMINUS;
+                // }
+                // else {
+                //     item.data = NONE;
+                //     ptok = NONE;
+                // }
                 handle_operator(out_queue, op_stack, &item);
                 break;
 
@@ -197,6 +204,8 @@ queue convert(char* nstr) {
         }
     }
     // Transfer any remain operators on the stack to the output queue.
+    while(!stack_is_empty(op_stack))
+        transfer(out_queue, op_stack);
 
     // The queue is now ready to solve.
     destroy_stack(op_stack);

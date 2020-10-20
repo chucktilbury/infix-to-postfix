@@ -6,12 +6,12 @@
 #include <string.h>
 #include <ctype.h>
 
-typedef struct __op_prec {
-    int op;
-    int prec;
-} op_prec;
+typedef struct {
+    int type;
+    int data;
+} expr_item;
 
-enum {NONE, VALUE, OPAREN, CPAREN, ADD, SUB, MUL, DIV, UNARY};
+enum {NONE, VALUE, OPAREN, CPAREN, ADD, SUB, MUL, DIV, UNARYPLUS, UNARYMINUS};
 #define tokstr(t) (t==NONE)?"NONE": \
                     (t==VALUE)?"VALUE": \
                     (t==OPAREN)?"OPAREN": \
@@ -20,6 +20,7 @@ enum {NONE, VALUE, OPAREN, CPAREN, ADD, SUB, MUL, DIV, UNARY};
                     (t==SUB)?"SUB": \
                     (t==MUL)?"MUL": \
                     (t==DIV)?"DIV": \
-                    (t==UNARY)?"UNARY":"Unknown"
+                    (t==UNARYPLUS)?"UNARYPLUS": \
+                    (t==UNARYMINUS)?"UNARYMINUS":"Unknown"
 
 #endif
