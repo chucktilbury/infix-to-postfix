@@ -15,7 +15,6 @@ typedef struct __op_prec {
     int prec;
 } op_prec;
 
-
 static op_prec precs[] = {
     {OPAREN, 1},
     {CPAREN, 1},
@@ -27,19 +26,6 @@ static op_prec precs[] = {
     {UNARYPLUS, 4},
     {-1, -1}
 };
-
-void show_outq(queue q) {
-
-    expr_item item;
-
-    printf("show outq:\n");
-    while(!read_queue(q, &item)) {
-        if(item.type != VALUE)
-            printf("type: %-8s data: %s\n", tokstr(item.type), tokstr(item.data));
-        else
-            printf("type: %-8s data: %d\n", tokstr(item.type), item.data);
-    }
-}
 
 /*
  *  Return the precidence value of the item given. Does not check for unary
@@ -133,7 +119,9 @@ static void handle_cparen(queue q, stack s) {
     }
 }
 
-
+/*
+ *  Main interface.
+ */
 queue convert(char* nstr) {
 
     int tok, ptok = NONE;
@@ -155,13 +143,6 @@ queue convert(char* nstr) {
                 item.type = (ptok == NONE)? UNARYMINUS: SUB;
                 item.data = NONE;
                 ptok = NONE;
-                // if(ptok == NONE) {
-                //     item.data = UNARYMINUS;
-                // }
-                // else {
-                //     item.data = NONE;
-                //     ptok = NONE;
-                // }
                 handle_operator(out_queue, op_stack, &item);
                 break;
 
@@ -171,7 +152,6 @@ queue convert(char* nstr) {
                 item.type = tok;
                 item.data = NONE;
                 ptok = NONE;
-                //write_queue(out_queue, &item);
                 handle_operator(out_queue, op_stack, &item);
                 break;
 
@@ -180,7 +160,6 @@ queue convert(char* nstr) {
                 item.type = tok;
                 item.data = NONE;
                 ptok = NONE;
-                //write_queue(out_queue, &item);
                 push_stack(op_stack, &item);
                 break;
 
@@ -190,7 +169,6 @@ queue convert(char* nstr) {
                 item.type = tok;
                 item.data = NONE;
                 ptok = NONE;
-                //write_queue(out_queue, &item);
                 handle_cparen(out_queue, op_stack);
                 break;
 
@@ -211,47 +189,4 @@ queue convert(char* nstr) {
     destroy_stack(op_stack);
     return out_queue;
 }
-
-
-// void convert(char* nstr) {
-
-//     int tok, ptok;
-//     char tstr[50];
-//     expr_item item;
-
-//     for(tok = token(nstr, tstr, sizeof(tstr)); tok > 0; tok = token(NULL, tstr, sizeof(tstr))) {
-//         switch(tok) {
-//             case ADD:
-//             case SUB:
-//             case MUL:
-//             case DIV:
-//                 item.type = tok;
-//                 if(ptok == NONE) {
-//                     item.data = UNARY;
-//                 }
-//                 else {
-//                     item.data = NONE;
-//                     ptok = NONE;
-//                 }
-//                 write_queue(out_queue, &item);
-//                 break;
-
-//             case OPAREN:
-//                 //break;
-
-//             case CPAREN:
-//                 item.type = tok;
-//                 item.data = NONE;
-//                 write_queue(out_queue, &item);
-//                 break;
-
-//             case VALUE:
-//                 item.type = tok;
-//                 item.data = atoi(tstr);
-//                 ptok = VALUE;
-//                 write_queue(out_queue, &item);
-//                 break;
-//         }
-//     }
-// }
 

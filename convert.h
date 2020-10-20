@@ -3,9 +3,6 @@
 
 #include "queue.h"
 
-void init_all(void);
-void destroy_all(void);
 queue convert(char*);
-void show_outq(queue);
 
 #endif

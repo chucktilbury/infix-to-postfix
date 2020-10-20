@@ -1,6 +1,6 @@
 /*
- *  This is a solver for a RPN converted expression. It returns the
- *  value that was solved.
+ *  This is a solver for a RPN converted expression that has been store in
+ *  a queue. It returns the value that was solved.
  */
 #include "common.h"
 #include "stack.h"

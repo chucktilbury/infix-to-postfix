@@ -23,6 +23,12 @@ typedef struct {
     __stack_elem* top;
 } __stack;
 
+/*
+ *  Push an item on the stack. This allocates the memory for the stack item
+ *  as well as the data that it contains. An error is returned when the
+ *  memory cannot be allocated for the item or the data. Storing NULL data
+ *  is not supported.
+ */
 int push_stack(stack stk, void* in_buf) {
 
     __stack* s = (__stack*)stk;
@@ -53,6 +59,12 @@ int push_stack(stack stk, void* in_buf) {
     return 0;
 }
 
+/*
+ *  Pop an item from the stack. The data is returned in the void* parameter.
+ *  If there was an error, then return !0, otherwise return 0. If the out_buf
+ *  parameter is NULL, then the data is simply discarded, instead of copied
+ *  into the buffer.
+ */
 int pop_stack(stack stk, void* out_buf) {
 
     __stack* s = (__stack*)stk;
@@ -74,6 +86,10 @@ int pop_stack(stack stk, void* out_buf) {
     return 1;
 }
 
+/*
+ *  Return the data structure on the top of the stack without altering
+ *  the stack itself.
+ */
 int peek_stack(stack stk, void* out_buf) {
 
     __stack* s = (__stack*)stk;
@@ -92,10 +108,13 @@ int peek_stack(stack stk, void* out_buf) {
 int stack_is_empty(stack stk) {
 
     __stack* s = (__stack*)stk;
-    int v = (s->top == NULL);
-    return v;
+    return (s->top == NULL);
 }
 
+/*
+ *  Allocate the stack data structure on the heap and return the opaque
+ *  handle. If the memory allocation fails, then return NULL.
+ */
 stack create_stack(size_t size) {
 
     __stack* stk = calloc(1, sizeof(__stack));
@@ -106,30 +125,19 @@ stack create_stack(size_t size) {
     }
 
     stk->item_size = size;
-    // base and top are NULL
+    // top is NULL
     return (stack)stk;
 }
 
+/*
+ *  Free all of the memory associated with the stack.
+ */
 int destroy_stack(stack stk) {
-
-    // __stack* s = (__stack*)stk;
-    // __stack_elem* crnt;
-    // __stack_elem* next;
 
     while(!stack_is_empty(stk)) {
         pop_stack(stk, NULL);
     }
     free(stk);
-    // if(stk != NULL) {
-    //     for(crnt = s->base; crnt != NULL; crnt=next) {
-    //         next = crnt->next;
-    //         if(crnt->data != NULL) {
-    //             free(crnt->data);
-    //         }
-    //     }
-    //     free(stk);
-    //     return 0;
-    // }
-    return 1;
+    return 0;
 }
 

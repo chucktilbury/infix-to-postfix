@@ -23,7 +23,10 @@ typedef struct {
     __queue_elem* last;
 } __queue;
 
-// note that add does not effect crnt
+/*
+ *  Add an element to the end of the queue. Returns an error only when
+ *  memory cannot be allocated for the queue element.
+ */
 int write_queue(queue que, void* in_buf) {
 
     __queue* q = (__queue*)que;
@@ -51,6 +54,10 @@ int write_queue(queue que, void* in_buf) {
     return 0;
 }
 
+/*
+ *  Read from the head of the queue. If the queue is empty or if the last
+ *  item has been read then return !0, else return 0.
+ */
 int read_queue(queue que, void *out_buf) {
 
     __queue* q = (__queue*)que;
@@ -62,6 +69,11 @@ int read_queue(queue que, void *out_buf) {
     return 1;
 }
 
+/*
+ *  This resets the current pointer to the beginning of the queue. No other
+ *  elements are effected. Alwats returns no error, even if the queue is
+ *  empty.
+ */
 int reset_queue(queue que) {
 
     __queue* q = (__queue*)que;
@@ -69,6 +81,11 @@ int reset_queue(queue que) {
     return 0;
 }
 
+/*
+ *  Return an opaque handle to the queue. The element size is the amount of
+ *  memory to be allocated for the data in the queue. If memory cannot be
+ *  allocated the return NULL.
+ */
 queue create_queue(size_t elem_size) {
 
     __queue* q = (__queue*)calloc(1, sizeof(__queue));
@@ -82,6 +99,10 @@ queue create_queue(size_t elem_size) {
     return q;
 }
 
+/*
+ *  Free all memory associated with the queue. The only error condition is
+ *  when the queue pointer is NULL.
+ */
 int destroy_queue(queue que) {
 
     __queue* q = (__queue*)que;
@@ -97,6 +118,7 @@ int destroy_queue(queue que) {
             free(crnt);
         }
         free(q);
+        return 0;
     }
     return 1;
 }

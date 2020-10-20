@@ -11,8 +11,11 @@
 char buffer[1024];
 int buf_head = 0;
 
-// need buffer checks.
+/*
+ *  Internal function that actually scans the string and returns tokens.
+ */
 static int scan(char* str, size_t len) {
+// need buffer checks.
 
     int str_idx = 0;
     int state = 0;
